@@ -5,7 +5,9 @@
 Local LLM Chatbot is a simple AI-powered chatbot built using Python, Streamlit, Ollama, and LangChain. It allows users to interact with an AI assistant while maintaining conversation history using LangChain memory.
 
 The application uses a local Llama 3.2 model through Ollama when running on a local computer and Groq when deployed on Streamlit Cloud.
-APP LINK:=https://local-llm-chatbot-mtkbjrp4bjwdugmakapnbe.streamlit.app/
+
+DEMO LINK
+https://local-llm-chatbot-mtkbjrp4bjwdugmakapnbe.streamlit.app/
 
 ## Features
 
