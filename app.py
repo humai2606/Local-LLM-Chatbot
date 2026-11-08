@@ -1,18 +1,43 @@
 
 import streamlit as st
+import uuid
+import os
+
 from langchain_ollama import ChatOllama
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
+# Page configuration
 st.set_page_config(page_title="Local AI Chatbot", page_icon="🤖")
 
 st.title("Local AI Chatbot")
-st.caption("Powered by Llama 3.2 and LangChain Memory")
+st.caption("Powered by Llama 3.2, Groq and LangChain Memory")
 
-# Initialize local LLM
-llm = ChatOllama(model="llama3.2", temperature=0.7)
+# Get Groq API key
+groq_api_key = os.getenv("GROQ_API_KEY")
 
+if not groq_api_key:
+    try:
+        groq_api_key = st.secrets["GROQ_API_KEY"]
+    except Exception:
+        groq_api_key = None
+
+# Select model
+if groq_api_key:
+    llm = ChatGroq(
+        model="llama-3.3-70b-versatile",
+        temperature=0.7,
+        api_key=groq_api_key
+    )
+else:
+    llm = ChatOllama(
+        model="llama3.2",
+        temperature=0.7
+    )
+
+# Conversation memory storage
 if "store" not in st.session_state:
     st.session_state.store = {}
 
@@ -23,16 +48,17 @@ def get_session_history(session_id):
         store[session_id] = InMemoryChatMessageHistory()
     return store[session_id]
 
-# Create prompt
+# Chat prompt
 prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are a helpful AI assistant."),
+    ("system", "You are a helpful AI assistant. Answer clearly and simply."),
     MessagesPlaceholder(variable_name="history"),
     ("human", "{input}")
 ])
 
-# Create chatbot chain
+# Create chain
 chain = prompt | llm
 
+# Add LangChain memory
 chatbot = RunnableWithMessageHistory(
     chain,
     get_session_history,
@@ -40,23 +66,26 @@ chatbot = RunnableWithMessageHistory(
     history_messages_key="history"
 )
 
-# Session ID
-session_id = "user_session"
+# Session management
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat history
+# Display previous messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
-# Chat input
-if user_input := st.chat_input("Ask something..."):
+# User input
+user_input = st.chat_input("Ask me anything...")
 
-    st.session_state.messages.append(
-        {"role": "user", "content": user_input}
-    )
+if user_input:
+    st.session_state.messages.append({
+        "role": "user",
+        "content": user_input
+    })
 
     with st.chat_message("user"):
         st.write(user_input)
@@ -65,12 +94,17 @@ if user_input := st.chat_input("Ask something..."):
         with st.spinner("Thinking..."):
             response = chatbot.invoke(
                 {"input": user_input},
-                config={"configurable": {"session_id": session_id}}
+                config={
+                    "configurable": {
+                        "session_id": st.session_state.session_id
+                    }
+                }
             )
 
             answer = response.content
             st.write(answer)
 
-    st.session_state.messages.append(
-        {"role": "assistant", "content": answer}
-    )
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": answer
+    })
