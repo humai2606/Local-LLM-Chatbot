@@ -1,71 +1,81 @@
-# Local AI Chatbot with LangChain Memory
+# Local LLM Chatbot with LangChain Memory
 
 ## Project Overview
 
-Local AI Chatbot is a simple conversational AI application built using a locally running Large Language Model (LLM). It uses Llama 3.2 through Ollama and LangChain to maintain conversation history and remember previous user messages.
+Local LLM Chatbot is a simple AI-powered chatbot built using Python, Streamlit, Ollama, and LangChain. It allows users to interact with an AI assistant while maintaining conversation history using LangChain memory.
+
+The application uses a local Llama 3.2 model through Ollama when running on a local computer and Groq when deployed on Streamlit Cloud.
+APP LINK:=https://local-llm-chatbot-mtkbjrp4bjwdugmakapnbe.streamlit.app/
 
 ## Features
 
-- Runs locally using Ollama.
-- Powered by Llama 3.2.
-- LangChain conversation memory.
-- Remembers previous messages during the session.
-- Interactive chatbot interface using Streamlit.
-- No OpenAI API key required.
+- AI-powered conversational chatbot
+- Local LLM integration using Ollama
+- Llama 3.2 model support
+- Groq API integration for cloud deployment
+- LangChain prompt templates
+- Conversation memory using RunnableWithMessageHistory
+- Streamlit-based user interface
+- Remembers previous messages during the conversation
 
 ## Technologies Used
 
 - Python
+- Streamlit
+- LangChain
 - Ollama
 - Llama 3.2
-- LangChain
-- Streamlit
+- Groq API
 
-## Project Structure
+## Project Architecture
 
-```text
-Local-LLM-Chatbot/
-│
-├── app.py
-├── requirements.txt
-└── README.md
-```
+**Local Execution:**
+
+User → Streamlit UI → LangChain → Ollama → Llama 3.2 → Response
+
+**Cloud Deployment:**
+
+User → Streamlit UI → LangChain → Groq API → AI Model → Response
+
+LangChain conversation memory maintains the previous messages and provides context for future responses.
 
 ## Installation and Setup
 
-### 1. Install Ollama
-
-Download Ollama from https://ollama.com/download
-
-### 2. Download the LLM
-
-```bash
-ollama pull llama3.2
-```
-
-### 3. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone YOUR_GITHUB_REPOSITORY_URL
 cd Local-LLM-Chatbot
 ```
 
-### 4. Create Virtual Environment
+### 2. Create a Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-Activate it on Windows:
+### 3. Activate the Environment
+
+Windows:
 
 ```bash
 venv\Scripts\activate
 ```
 
-### 5. Install Dependencies
+### 4. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
+```
+
+### 5. Install and Run Ollama
+
+Download Ollama from https://ollama.com/
+
+Pull the Llama 3.2 model:
+
+```bash
+ollama pull llama3.2
 ```
 
 ### 6. Run the Application
@@ -74,22 +84,44 @@ pip install -r requirements.txt
 python -m streamlit run app.py
 ```
 
-## How It Works
+## Cloud Deployment
 
-1. User enters a message.
-2. LangChain retrieves previous conversation history.
-3. Ollama processes the prompt using Llama 3.2.
-4. The chatbot generates a response.
-5. LangChain stores the conversation for future interactions.
+The application can be deployed using Streamlit Community Cloud.
 
-## Memory Implementation
+For cloud deployment, add your Groq API key in the Streamlit Cloud Secrets settings:
 
-The application uses LangChain's `RunnableWithMessageHistory` and `InMemoryChatMessageHistory` to maintain conversation history within the current session.
+```toml
+GROQ_API_KEY = "your_groq_api_key"
+```
 
-## Note
+Never upload your API key to GitHub.
 
-Conversation memory is stored temporarily in memory and is not permanently saved after restarting the application.
+## LangChain Memory
+
+The project uses:
+
+- `InMemoryChatMessageHistory`
+- `RunnableWithMessageHistory`
+- `MessagesPlaceholder`
+
+These components allow the chatbot to remember previous messages within the current conversation session.
+
+## Example Interaction
+
+**User:** My name is Humaira.
+
+**AI:** Nice to meet you, Humaira!
+
+**User:** What is my name?
+
+**AI:** Your name is Humaira.
+
+## Project Objective
+
+To understand how local Large Language Models work and how LangChain memory can be integrated into a conversational AI application.
 
 ## Author
 
-Humairul Jashira
+Humairul Jashira M.
+
+B.Sc. Computer Science with Artificial Intelligence
